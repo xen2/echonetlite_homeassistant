@@ -43,7 +43,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                                     config,
                                     op_code,
                                     ENL_OP_CODES[eojgc][eojcc][op_code],
-                                    config.title,
+                                    entity['echonetlite']._name or config.title,
                                 )
                             )
                             if op_code == ENL_STATUS:
@@ -65,7 +65,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                         CONF_ICON: "mdi:power-settings",
                         CONF_SERVICE_DATA: SWITCH_POWER,
                     },
-                    config.title,
+                    entity["echonetlite"]._name or config.title,
                 )
             )
     async_add_entities(entities, True)

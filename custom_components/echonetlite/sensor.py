@@ -72,7 +72,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                             entity["echonetlite"],
                             op_code,
                             ENL_OP_CODES[eojgc][eojcc][op_code],
-                            config.title,
+                            entity["echonetlite"]._name or config.title,
                             hass,
                         )
                     )
@@ -87,7 +87,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                             entity["echonetlite"],
                             op_code,
                             ENL_OP_CODES[eojgc][eojcc][op_code],
-                            config.title,
+                            entity["echonetlite"]._name or config.title,
                             hass,
                         )
                     )
@@ -148,7 +148,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                                                 entity["echonetlite"],
                                                 op_code,
                                                 attr,
-                                                config.title,
+                                                entity["echonetlite"]._name or config.title,
                                                 hass,
                                             )
                                         )
@@ -160,7 +160,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                                         entity["echonetlite"],
                                         op_code,
                                         ENL_OP_CODES[eojgc][eojcc][op_code],
-                                        config.title,
+                                        entity["echonetlite"]._name or config.title,
                                         hass,
                                     )
                                 )
@@ -170,7 +170,7 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                         entity["echonetlite"],
                         op_code,
                         ENL_OP_CODES["default"],
-                        config.title,
+                        entity["echonetlite"]._name or config.title,
                     )
                 )
     async_add_entities(entities, True)

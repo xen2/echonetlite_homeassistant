@@ -333,6 +333,7 @@ class ECHONETConnector:
             self._host_product_code = instance["host_product_code"]
         self._uid = instance.get("uid")
         self._uidi = instance.get("uidi")
+        self._name = instance.get("name")
         self._api.register_async_update_callbacks(
             self._host,
             self._eojgc,

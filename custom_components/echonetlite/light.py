@@ -32,7 +32,7 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             entity["instance"]["eojgc"] == 0x02 and entity["instance"]["eojcc"] == 0x90
         ):  # General Lighting
             _LOGGER.debug("Configuring ECHONETlite Light entity")
-            entities.append(EchonetLight(config_entry.title, entity["echonetlite"]))
+            entities.append(EchonetLight(entity["echonetlite"]._name or config_entry.title, entity["echonetlite"]))
     _LOGGER.debug(f"Number of light devices to be added: {len(entities)}")
     async_add_devices(entities, True)
 

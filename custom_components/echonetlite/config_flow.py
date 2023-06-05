@@ -130,9 +130,11 @@ async def validate_input(
                 getmap = state["instances"][eojgc][eojcc][instance][ENL_GETMAP]
                 setmap = state["instances"][eojgc][eojcc][instance][ENL_SETMAP]
 
+                name = None
                 instance_list.append(
                     {
                         "host": host,
+                        "name": name,
                         "eojgc": eojgc,
                         "eojcc": eojcc,
                         "eojci": instance,
