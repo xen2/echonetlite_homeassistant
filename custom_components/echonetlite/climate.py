@@ -6,6 +6,7 @@ from pychonet.HomeAirConditioner import (
     ENL_AIR_VERT,
     ENL_HVAC_MODE,
     ENL_HVAC_SET_TEMP,
+    ENL_HVAC_SET_HUMIDITY,
     ENL_HVAC_ROOM_TEMP,
     ENL_HVAC_SILENT_MODE,
 )
@@ -189,6 +190,14 @@ class EchonetClimate(ClimateEntity):
         return self._target_temperature_step
 
     @property
+    def target_humidity(self):
+        """Return the temperature we try to reach."""
+        if ENL_HVAC_SET_HUMIDITY in self._connector._update_data:
+            humidity = self._connector._update_data[ENL_HVAC_SET_HUMIDITY]
+            return humidity
+        return None
+
+    @property
     def hvac_mode(self):
         """Return current operation ie. heat, cool, idle."""
         mode = self._connector._update_data[ENL_HVAC_MODE]
@@ -328,6 +337,10 @@ class EchonetClimate(ClimateEntity):
             self._connector._update_data[ENL_HVAC_SET_TEMP] = kwargs.get(
                 ATTR_TEMPERATURE
             )
+
+    async def async_set_humidity(self, humidity: int) -> None:
+        await self._connector._instance.setOperationalTemperature(humidity)
+        self._connector._update_data[ENL_HVAC_SET_TEMP] = humidity
 
     async def async_set_hvac_mode(self, hvac_mode):
         # _LOGGER.warning(self._connector._update_data)
