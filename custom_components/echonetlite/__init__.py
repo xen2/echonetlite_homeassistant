@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.util import Throttle
 from homeassistant.const import Platform
 from .const import DOMAIN, USER_OPTIONS, TEMP_OPTIONS, CONF_FORCE_POLLING, MISC_OPTIONS
+from .config_flow import enumerate_instances
 from pychonet.lib.udpserver import UDPServer
 
 from pychonet import ECHONETAPIClient
@@ -142,9 +143,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     loop = None
     server = None
 
-    async def discover_callback(host):
-        await config_entries.HANDLERS[DOMAIN].async_discover_newhost(hass, host)
-
     def unload_config_entry():
         _LOGGER.debug(
             f"Called unload_config_entry() try to remove {host} from server._state."
@@ -169,8 +167,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         server._debug_flag = True
         server._logger = _LOGGER.debug
         server._message_timeout = 300
-        server._discover_callback = discover_callback
         hass.data[DOMAIN].update({"api": server})
+
+    if not entry.pref_disable_new_entities:
+        host = entry.data["host"] if "host" in entry.data else entry.data["instances"][0]['host']
+
+        # TODO: avoid running it again if we just ran the config flow
+        instances = await enumerate_instances(hass, host)
+        #instances = await config_entries.HANDLERS[DOMAIN].async_discover_newhost(hass, host)
+
+        hass.config_entries.async_update_entry(
+            entry,
+            title=entry.title,
+            data={"host": host, "instances": instances}
+        )
 
     for instance in entry.data["instances"]:
         # auto update to new style

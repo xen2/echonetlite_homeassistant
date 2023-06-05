@@ -52,13 +52,11 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 _detected_hosts = {}
 _init_server = None
 
-
-async def validate_input(
-    hass: HomeAssistant, user_input: dict[str, Any]
+async def enumerate_instances(
+    hass: HomeAssistant,  host: str
 ) -> dict[str, Any]:
     """Validate the user input allows us to connect."""
-    _LOGGER.debug(f"IP address is {user_input['host']}")
-    host = user_input["host"]
+    _LOGGER.debug(f"IP address is {host}")
     server = None
     finished_instances = {}
     if DOMAIN in hass.data:  # maybe set up by config entry?
@@ -188,10 +186,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             server._debug_flag = True
             server._logger = _LOGGER.debug
             server._message_timeout = 300
-            server._discover_callback = discover_callback
 
             _init_server = server
 
+        server._discover_callback = discover_callback
         await server.discover()
 
         # Timeout after 30 seconds
@@ -200,6 +198,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if len(_detected_hosts):
                 _LOGGER.debug("ECHONET Any Node Discovery Successful!")
                 break
+
+        server._discover_callback = None
 
         if _init_server:
             _init_server._server._sock.close()
@@ -239,7 +239,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             )
             return self.async_show_form(step_id=step, data_schema=scm, errors=errors)
         try:
-            self.instance_list = await validate_input(self.hass, user_input)
+            self.instance_list = await enumerate_instances(self.hass, user_input["host"])
             _LOGGER.debug("Node detected")
         except ErrorConnect as e:
             errors["base"] = f"{e}"
@@ -262,7 +262,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             _detected_hosts.pop(self.host)
         return self.async_create_entry(
             title=self.title,
-            data={"instances": self.instance_list},
+            data={"host": self.host, "instances": self.instance_list},
             options={"other_mode": "as_off"},
         )
 
@@ -277,13 +277,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.info(f"received newip discovery: {host}")
         if host not in _detected_hosts.keys():
             try:
-                instance_list = await validate_input(hass, {"host": host})
+                instance_list = await enumerate_instances(hass, host)
                 _LOGGER.debug(f"ECHONET Node detected in {host}")
             except ErrorConnect as e:
                 _LOGGER.debug(f"ECHONET Node Error Connect ({e})")
             else:
                 if len(instance_list):
-                    _detected_hosts.update({host: instance_list})
+                    _detected_hosts.update({ host: host })
                 else:
                     _LOGGER.debug(f"ECHONET Node not found in {host}")
 
