@@ -82,6 +82,9 @@ async def enumerate_instances(
         server._logger = _LOGGER.debug
         server._message_timeout = 300
 
+    # make sure multicast is registered with the local IP used to reach this host
+    server._server.register_multicast_from_host(host)
+
     instance_list = []
     _LOGGER.debug("Beginning ECHONET node discovery")
     await server.discover(host)

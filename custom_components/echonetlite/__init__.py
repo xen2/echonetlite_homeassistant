@@ -182,6 +182,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not entry.pref_disable_new_entities:
         host = entry.data["host"] if "host" in entry.data else entry.data["instances"][0]['host']
 
+        # make sure multicast is registered with the local IP used to reach this host
+        server._server.register_multicast_from_host(host)
+
         # TODO: avoid running it again if we just ran the config flow
         instances = await enumerate_instances(hass, host)
         #instances = await config_entries.HANDLERS[DOMAIN].async_discover_newhost(hass, host)
