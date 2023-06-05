@@ -326,8 +326,11 @@ class ECHONETConnector:
         self._getPropertyMap = instance["getmap"]
         self._setPropertyMap = instance["setmap"]
         self._manufacturer = None
+        self._host_product_code = None
         if "manufacturer" in instance:
             self._manufacturer = instance["manufacturer"]
+        if "host_product_code" in instance:
+            self._host_product_code = instance["host_product_code"]
         self._uid = instance.get("uid")
         self._uidi = instance.get("uidi")
         self._api.register_async_update_callbacks(

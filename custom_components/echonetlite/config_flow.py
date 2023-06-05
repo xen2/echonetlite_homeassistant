@@ -99,6 +99,7 @@ async def validate_input(
     state = server._state[host]
     uid = state["uid"]
     manufacturer = state["manufacturer"]
+    host_product_code = state["product_code"]
     if not isinstance(manufacturer, str):
         # If unable to resolve the manufacturer,
         # the raw identification number will be passed as int.
@@ -141,6 +142,7 @@ async def validate_input(
                         "uid": uid,  # Deprecated, for backwards compatibility
                         "uidi": f"{uid}-{eojgc}-{eojcc}-{instance}",
                         "manufacturer": manufacturer,
+                        "host_product_code": host_product_code,
                     }
                 )
 
