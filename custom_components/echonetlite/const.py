@@ -49,6 +49,7 @@ SERVICE_SET_INT_1B = "set_value_int_1b"
 OPEN = "open"
 CLOSE = "close"
 STOP = "stop"
+DEVICE_CLASS_ECHONETLITE_LIGHT_SCENE = "echonetlite_light_scene"
 SWITCH_POWER = {DATA_STATE_ON: ENL_ON, DATA_STATE_OFF: ENL_OFF}
 SWITCH_BINARY = {DATA_STATE_ON: 0x41, DATA_STATE_OFF: 0x42}
 SWITCH_BINARY_INVERT = {DATA_STATE_ON: 0x42, DATA_STATE_OFF: 0x41}
@@ -333,6 +334,14 @@ ENL_OP_CODES = {
             },
             0xD3: {CONF_DISABLED_DEFAULT: True},
             0xE1: {CONF_DISABLED_DEFAULT: True},
+        },
+        0xA3: {
+            0xC0: { # Set scene
+                CONF_ICON: "mdi:palette",
+                CONF_TYPE: DEVICE_CLASS_ECHONETLITE_LIGHT_SCENE,
+                CONF_STATE_CLASS: SensorStateClass.MEASUREMENT,
+                CONF_SERVICE: [ SERVICE_SET_INT_1B ],
+            },
         },
     },
     "default": {
