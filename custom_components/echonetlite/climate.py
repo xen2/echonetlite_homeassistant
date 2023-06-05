@@ -14,7 +14,10 @@ from pychonet.HomeAirConditioner import (
 from pychonet.EchonetInstance import ENL_GETMAP
 from pychonet.lib.eojx import EOJX_CLASS
 
+import voluptuous as vol
+
 from homeassistant.components.climate import ClimateEntity
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.util.unit_system import UnitSystem
 from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE,
@@ -59,6 +62,9 @@ DEFAULT_HVAC_MODES = ["heat", "cool", "dry", "fan_only", "heat_cool", "off"]
 DEFAULT_SWING_MODES = ["upper", "upper-central", "central", "lower-central", "lower"]
 DEFAULT_PRESET_MODES = ["normal", "high-speed", "silent"]
 
+SERVICE_SET_HUMIDIFER_DURING_HEATER = "set_humidifier_during_heater"
+ATTR_STATE = "state"
+ATTR_HUMIDITY = "humidity"
 
 async def async_setup_entry(hass, config_entry, async_add_devices):
     """Set up entry."""
@@ -74,6 +80,16 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
             )
     async_add_devices(entities, True)
 
+    platform = entity_platform.async_get_current_platform()
+
+    platform.async_register_entity_service(
+        SERVICE_SET_HUMIDIFER_DURING_HEATER,
+        {
+            vol.Required(ATTR_STATE): cv.boolean,
+            vol.Required(ATTR_HUMIDITY): cv.byte,
+        },
+        "async_set_humidifier_during_heater",
+    )
 
 class EchonetClimate(ClimateEntity):
     """Representation of an ECHONETLite climate device."""
@@ -362,6 +378,10 @@ class EchonetClimate(ClimateEntity):
     async def async_turn_off(self):
         """Turn off."""
         await self._connector._instance.off()
+
+    async def async_set_humidifier_during_heater(self, state, humidity):
+        """Handle boost heating service call."""
+        await self._connector._instance.setHeaterHumidifier(state, humidity)
 
     @property
     def min_temp(self) -> int:

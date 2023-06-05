@@ -37,6 +37,8 @@ from pychonet.HomeAirConditioner import (
     ENL_HVAC_ROOM_TEMP,
     ENL_HVAC_SILENT_MODE,
     ENL_HVAC_OUT_TEMP,
+    ENL_HVAC_HUMIDIFIER_STATE,
+    ENL_HVAC_HUMIDIFIER_VALUE,
 )
 
 from pychonet.DistributionPanelMeter import (
