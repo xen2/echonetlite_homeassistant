@@ -63,6 +63,8 @@ from pychonet.LowVoltageSmartElectricEnergyMeter import (
 
 from pychonet.GeneralLighting import ENL_BRIGHTNESS, ENL_COLOR_TEMP
 
+from pychonet.LightingSystem import ENL_SCENE, ENL_SCENE_MAX
+
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [
     Platform.SENSOR,
@@ -120,6 +122,12 @@ _0288_API_CONNECTOR_DEFAULT_FLAGS = [
 SINGLE_FUNCTION_LIGHT_API_CONNECTOR_DEFAULT_FLAGS = [
     ENL_STATUS,
     ENL_BRIGHTNESS,
+]
+
+LIGHTING_SYSTEM_API_CONNECTOR_DEFAULT_FLAGS = [
+    ENL_STATUS,
+    ENL_SCENE,
+    ENL_SCENE_MAX,
 ]
 
 
@@ -375,6 +383,9 @@ class ECHONETConnector:
         elif self._eojgc == 0x02 and self._eojcc == 0x91:
             _LOGGER.debug(f"Starting ECHONETLite SingleFunctionLighting instance at {self._host}")
             flags = SINGLE_FUNCTION_LIGHT_API_CONNECTOR_DEFAULT_FLAGS
+        elif self._eojgc == 0x02 and self._eojcc == 0xA3:
+            _LOGGER.debug(f"Starting ECHONETLite LightingSystem instance at {self._host}")
+            flags = LIGHTING_SYSTEM_API_CONNECTOR_DEFAULT_FLAGS
         elif self._eojgc == 0x02 and self._eojcc == 0x87:
             _LOGGER.debug(
                 f"Starting ECHONETLite DistributionPanelMeter instance at {self._host}"
