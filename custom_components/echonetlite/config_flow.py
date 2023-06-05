@@ -19,11 +19,12 @@ from pychonet.lib.const import (
     ENL_GETMAP,
     ENL_UID,
     ENL_MANUFACTURER,
+    GET,
 )
 
 # from aioudp import UDPServer
 from pychonet.lib.udpserver import UDPServer
-
+from pychonet.lib.epc_functions import _null_padded_optional_string
 # from pychonet import Factory
 from pychonet import ECHONETAPIClient
 from .const import (
@@ -130,7 +131,13 @@ async def validate_input(
                 getmap = state["instances"][eojgc][eojcc][instance][ENL_GETMAP]
                 setmap = state["instances"][eojgc][eojcc][instance][ENL_SETMAP]
 
+                uidi = f"{uid}-{eojgc}-{eojcc}-{instance}"
                 name = None
+                if host_product_code == "WTY2001" and eojcc == 0x91:
+                    await server.echonetMessage(host, eojgc, eojcc, instance, GET, [{"EPC": 0xFD}, {"EPC": 0xFE}])
+                    uidi = _null_padded_optional_string(state["instances"][eojgc][eojcc][instance][0xFE])
+                    name = _null_padded_optional_string(state["instances"][eojgc][eojcc][instance][0xFD])
+
                 instance_list.append(
                     {
                         "host": host,
@@ -142,7 +149,7 @@ async def validate_input(
                         "getmap": getmap,
                         "setmap": setmap,
                         "uid": uid,  # Deprecated, for backwards compatibility
-                        "uidi": f"{uid}-{eojgc}-{eojcc}-{instance}",
+                        "uidi": uidi,
                         "manufacturer": manufacturer,
                         "host_product_code": host_product_code,
                     }
