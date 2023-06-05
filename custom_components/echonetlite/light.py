@@ -13,7 +13,7 @@ from homeassistant.components.light import (
     ATTR_COLOR_TEMP,
 )
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_FORCE_POLLING
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,6 +74,7 @@ class EchonetLight(LightEntity):
         self._echonet_mireds_int = [68, 67, 66, 64, 65]  # coolest to warmest
         self._olddata = {}
         self._should_poll = True
+        self.update_option_listener()
 
     async def async_update(self):
         """Get the latest state from the Light."""
@@ -112,7 +113,7 @@ class EchonetLight(LightEntity):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return True
+        return self._should_poll
 
     @property
     def name(self):
@@ -238,6 +239,7 @@ class EchonetLight(LightEntity):
 
     async def async_added_to_hass(self):
         """Register callbacks."""
+        self._connector.add_update_option_listener(self.update_option_listener)
         self._connector.register_async_update_callbacks(self.async_update_callback)
 
     async def async_update_callback(self, isPush=False):
@@ -247,3 +249,10 @@ class EchonetLight(LightEntity):
             self.async_schedule_update_ha_state()
             if isPush:
                 await self._connector.async_update()
+
+    def update_option_listener(self):
+       self._should_poll = (self._connector._user_options.get(CONF_FORCE_POLLING, False)
+                            or ENL_STATUS not in self._connector._ntfPropertyMap
+                            or (COLOR_MODE_BRIGHTNESS in self._supported_color_modes and ENL_BRIGHTNESS not in self._connector._ntfPropertyMap)
+                            or (COLOR_MODE_COLOR_TEMP in self._supported_color_modes and ENL_COLOR_TEMP not in self._connector._ntfPropertyMap))
+       _LOGGER.info(f"{self._name}: _should_poll is {self._should_poll}")
