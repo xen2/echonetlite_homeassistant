@@ -28,6 +28,8 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import StateType
 from homeassistant.exceptions import InvalidStateError, NoEntitySpecifiedError
 
+from pychonet.GeneralLighting import ENL_BRIGHTNESS, ENL_COLOR_TEMP
+
 from pychonet.lib.epc import EPC_CODE, EPC_SUPER
 from pychonet.lib.eojx import EOJX_CLASS
 from pychonet.ElectricBlind import ENL_OPENSTATE
@@ -97,6 +99,10 @@ async def async_setup_entry(hass, config, async_add_entities, discovery_info=Non
                     mode_select and ENL_OPENSTATE == op_code
                 ):
                     continue
+                if eojgc == 0x02 and (eojcc == 0x90 or eojcc == 0x91):
+                    # General Lighting, Single Function Lighting: skip already handled values
+                    if op_code == ENL_BRIGHTNESS or op_code == ENL_COLOR_TEMP:
+                        continue
                 if eojgc in ENL_OP_CODES.keys():
                     if eojcc in ENL_OP_CODES[eojgc].keys():
                         if op_code in ENL_OP_CODES[eojgc][eojcc].keys():
