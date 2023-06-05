@@ -114,6 +114,11 @@ _0288_API_CONNECTOR_DEFAULT_FLAGS = [
     ENL_LVSEEM_ENG_UNIT,
 ]
 
+SINGLE_FUNCTION_LIGHT_API_CONNECTOR_DEFAULT_FLAGS = [
+    ENL_STATUS,
+    ENL_BRIGHTNESS,
+]
+
 
 def polling_update_debug_log(values, eojgc, eojcc):
     debug_log = f"\nECHONETlite polling update data:\n"
@@ -355,6 +360,9 @@ class ECHONETConnector:
                 f"Starting ECHONETLite GeneralLighting instance at {self._host}"
             )
             flags = LIGHT_API_CONNECTOR_DEFAULT_FLAGS
+        elif self._eojgc == 0x02 and self._eojcc == 0x91:
+            _LOGGER.debug(f"Starting ECHONETLite SingleFunctionLighting instance at {self._host}")
+            flags = SINGLE_FUNCTION_LIGHT_API_CONNECTOR_DEFAULT_FLAGS
         elif self._eojgc == 0x02 and self._eojcc == 0x87:
             _LOGGER.debug(
                 f"Starting ECHONETLite DistributionPanelMeter instance at {self._host}"
