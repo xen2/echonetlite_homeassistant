@@ -49,6 +49,8 @@ from pychonet.DistributionPanelMeter import (
     ENL_DPM_INSTANT_ENG,
     ENL_DPM_INSTANT_CUR,
     ENL_DPM_INSTANT_VOL,
+    ENL_DPM_CHANNEL_SIMPLEX_CUMULATIVE_ENG,
+    ENL_DPM_CHANNEL_SIMPLEX_INSTANT_ENG,
 )
 
 from pychonet.LowVoltageSmartElectricEnergyMeter import (
@@ -129,6 +131,10 @@ LIGHTING_SYSTEM_API_CONNECTOR_DEFAULT_FLAGS = [
     ENL_SCENE,
     ENL_SCENE_MAX,
 ]
+
+DISTRIBUTION_PANEL_METER_API_CONNECTOR_DEFAULT_FLAGS = [ENL_STATUS, ENL_DPM_ENG_NOR, ENL_DPM_ENG_REV, ENL_DPM_ENG_UNIT, ENL_DPM_DAY_GET_HISTORY, ENL_DPM_INSTANT_ENG, ENL_DPM_INSTANT_CUR, ENL_DPM_INSTANT_VOL, ENL_DPM_CHANNEL_SIMPLEX_CUMULATIVE_ENG, ENL_DPM_CHANNEL_SIMPLEX_INSTANT_ENG]
+
+STORAGE_BATTERY_API_CONNECTOR_DEFAULT_FLAGS = [ENL_STATUS, 0xA0, 0xA1, 0xA8, 0xA9, 0xCF, 0xD0, 0xD3, 0xD6, 0xD8, 0xE2, 0xE4, 0xE5, 0xE6]
 
 
 def polling_update_debug_log(values, eojgc, eojcc):
@@ -394,11 +400,16 @@ class ECHONETConnector:
                 f"Starting ECHONETLite DistributionPanelMeter instance at {self._host}"
             )
             flags = _0287_API_CONNECTOR_DEFAULT_FLAGS
+            _LOGGER.debug(f"Starting ECHONETLite DistributionPanelMeter instance at {self._host}")
+            flags = DISTRIBUTION_PANEL_METER_API_CONNECTOR_DEFAULT_FLAGS
         elif self._eojgc == 0x02 and self._eojcc == 0x88:
             _LOGGER.debug(
                 f"Starting ECHONETLite LowVoltageSmartElectricEnergyMeter instance at {self._host}"
             )
             flags = _0288_API_CONNECTOR_DEFAULT_FLAGS
+        elif self._eojgc == 0x02 and self._eojcc == 0x7D:
+            _LOGGER.debug(f"Starting ECHONETLite StorageBattery instance at {self._host}")
+            flags = STORAGE_BATTERY_API_CONNECTOR_DEFAULT_FLAGS
         else:
             _LOGGER.debug(
                 f"Starting ECHONETLite Generic instance for {self._eojgc}-{self._eojcc}-{self._eojci} at {self._host}"

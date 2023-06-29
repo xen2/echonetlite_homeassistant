@@ -40,10 +40,17 @@ CONF_FORCE_POLLING = "force_polling"
 CONF_ON_VALUE = "on_val"
 CONF_OFF_VALUE = "off_val"
 CONF_DISABLED_DEFAULT = "disabled_default"
+CONF_MULTIPLIER = "multiplier"
+CONF_MULTIPLIER_OPCODE = "multiplier_opcode"
+CONF_MULTIPLIER_OPTIONAL_OPCODE = "multiplier_optional_opcode"
+CONF_ICON_POSITIVE = "icon_positive"
+CONF_ICON_NEGATIVE = "icon_negative"
+CONF_ICON_ZERO = "icon_zero"
 DATA_STATE_ON = "On"
 DATA_STATE_OFF = "Off"
 TYPE_SWITCH = "switch"
 TYPE_DATA_DICT = "type_data_dict"
+TYPE_DATA_ARRAY_WITH_SIZE_OPCODE = "type_data_array_with_size_opcode"
 SERVICE_SET_ON_TIMER_TIME = "set_on_timer_time"
 SERVICE_SET_INT_1B = "set_value_int_1b"
 OPEN = "open"
@@ -194,11 +201,19 @@ ENL_OP_CODES = {
                 CONF_ICON: "mdi:solar-power-variant-outline",
                 CONF_TYPE: DEVICE_CLASS_POWER,
                 CONF_STATE_CLASS: SensorStateClass.MEASUREMENT,
+                CONF_ICON_POSITIVE: "mdi:solar-power-variant",
+                CONF_ICON_NEGATIVE: "mdi:solar-power-variant-outline",
+                CONF_ICON_ZERO: "mdi:solar-power-variant-outline",
             },
             0xE1: {
                 CONF_ICON: "mdi:flash",
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+            },
+            0xE3: {
+                CONF_ICON: "mdi:flash",
+                CONF_TYPE: DEVICE_CLASS_ENERGY,
+                CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING
             },
             0xE5: {
                 CONF_ICON: "mdi:percent",
@@ -327,7 +342,9 @@ ENL_OP_CODES = {
                 CONF_STATE_CLASS: SensorStateClass.TOTAL,
             },
             0xD3: {
-                CONF_ICON: "mdi:battery",
+                CONF_ICON_POSITIVE: "mdi:battery-arrow-up",
+                CONF_ICON_NEGATIVE: "mdi:battery-arrow-down",
+                CONF_ICON_ZERO: "mdi:battery",
                 CONF_TYPE: DEVICE_CLASS_POWER,
                 CONF_STATE_CLASS: SensorStateClass.MEASUREMENT,
             },
@@ -387,6 +404,8 @@ ENL_OP_CODES = {
                 CONF_ICON: "mdi:flash",
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_UNIT_OF_MEASUREMENT: "kWh",
+                CONF_MULTIPLIER_OPCODE: 0xE2,
             }
         },
         0x81: {
@@ -394,6 +413,7 @@ ENL_OP_CODES = {
                 CONF_ICON: "mdi:water",
                 CONF_TYPE: VOLUME_CUBIC_METERS,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_MULTIPLIER_OPCODE: 0xE1,
             }
         },
         0x82: {
@@ -401,18 +421,37 @@ ENL_OP_CODES = {
                 CONF_ICON: "mdi:gas-burner",
                 CONF_TYPE: DEVICE_CLASS_GAS,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_MULTIPLIER: 0.001
             }
         },
         0x87: {
+            0xB3: {
+                CONF_ICON: "mdi:flash",
+                CONF_TYPE: DEVICE_CLASS_ENERGY,
+                CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_UNIT_OF_MEASUREMENT: "kWh",
+                TYPE_DATA_ARRAY_WITH_SIZE_OPCODE: 0xB1,
+                CONF_MULTIPLIER_OPCODE: 0xC2,
+            },
+            0xB7: {
+                CONF_ICON: "mdi:flash",
+                CONF_TYPE: DEVICE_CLASS_POWER,
+                CONF_STATE_CLASS: SensorStateClass.MEASUREMENT,
+                TYPE_DATA_ARRAY_WITH_SIZE_OPCODE: 0xB1,
+            },
             0xC0: {
                 CONF_ICON: "mdi:flash",
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_UNIT_OF_MEASUREMENT: "kWh",
+                CONF_MULTIPLIER_OPCODE: 0xC2,
             },
             0xC1: {
                 CONF_ICON: "mdi:flash",
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
+                CONF_UNIT_OF_MEASUREMENT: "kWh",
+                CONF_MULTIPLIER_OPCODE: 0xC2,
             },
             0xC6: {
                 CONF_ICON: "mdi:flash",
@@ -438,12 +477,16 @@ ENL_OP_CODES = {
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
                 CONF_UNIT_OF_MEASUREMENT: "kWh",
+                CONF_MULTIPLIER_OPCODE: 0xE2,
+                CONF_MULTIPLIER_OPTIONAL_OPCODE: 0xD3,
             },
             0xE3: {
                 CONF_ICON: None,
                 CONF_TYPE: DEVICE_CLASS_ENERGY,
                 CONF_STATE_CLASS: SensorStateClass.TOTAL_INCREASING,
                 CONF_UNIT_OF_MEASUREMENT: "kWh",
+                CONF_MULTIPLIER_OPCODE: 0xE2,
+                CONF_MULTIPLIER_OPTIONAL_OPCODE: 0xD3,
             },
             0xE7: {
                 CONF_ICON: None,
